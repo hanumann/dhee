@@ -40,3 +40,19 @@ setenforce 0
 sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 systemctl enable --now kubelet
+systemctl start kubelet
+modify changes in sysctl.conf 
+vi /etc/sysctl.conf
+set net.ipv4.ip_forward = 1
+sysctl - p
+disable firewall
+systemctl disable firewalld
+systemctl stop firewalld
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+sudo kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+sudo kubectl get nodes
+sudo kubectl get pods --all-namespaces
+
+
