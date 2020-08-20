@@ -1,12 +1,15 @@
 yum install -y yum-utils device-mapper-persistent-data lvm2
 yum-config-manager --add-repo \
   https://download.docker.com/linux/centos/docker-ce.repo
+  
   yum update -y && yum install -y \
   containerd.io-1.2.13 \
   docker-ce-19.03.11 \
-  docker-ce-cli-19.03.11 
+  docker-ce-cli-19.03.11
+  
  mkdir /etc/docker
-  cat > /etc/docker/daemon.json <<EOF
+ 
+cat > /etc/docker/daemon.json <<EOF
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
   "log-driver": "json-file",
@@ -19,11 +22,13 @@ yum-config-manager --add-repo \
   ]
 }
 EOF
+
 mkdir -p /etc/systemd/system/docker.service.d
 systemctl daemon-reload
 systemctl restart docker
+systemctl enable docker
 
-Kubeadm install
+Kubeadm installation
 
 cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
 [kubernetes]
@@ -41,13 +46,18 @@ sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
 yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
 systemctl enable --now kubelet
 systemctl start kubelet
-modify changes in sysctl.conf 
+
+modify changes in sysctl.conf
+
 vi /etc/sysctl.conf
 set net.ipv4.ip_forward = 1
 sysctl - p
+
 disable firewall
 systemctl disable firewalld
 systemctl stop firewalld
+
+After Successfully Instalattion 
 mkdir -p $HOME/.kube
 sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
